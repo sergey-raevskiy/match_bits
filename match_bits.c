@@ -12,11 +12,11 @@ int match_bits(match_bits_t *m, const void *d, size_t l, const char *p)
         {
             /* skip */
         }
-        else if (*p == '<')
+        else if (!binmode && *p == '<')
         {
             binmode = 1;
         }
-        else if (*p == '>')
+        else if (binmode && *p == '>')
         {
             binmode = 0;
         }
