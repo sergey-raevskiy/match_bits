@@ -4,6 +4,7 @@ int match_bits(match_bits_t *m, const void *d, size_t l, const char *p)
 {
     const unsigned char *pd = d;
     unsigned char mask = 0x80;
+    int binmode = 0;
 
     while (*p && l)
     {
@@ -11,15 +12,25 @@ int match_bits(match_bits_t *m, const void *d, size_t l, const char *p)
         {
             /* skip */
         }
-        else if (*p == '0')
+        else if (*p == '<')
+        {
+            binmode = 1;
+        }
+        else if (*p == '>')
+        {
+            binmode = 0;
+        }
+        else if (binmode && *p == '0')
         {
             if (*pd & mask)
                 return 0;
+            mask >>= 1;
         }
-        else if (*p == '1')
+        else if (binmode && *p == '1')
         {
             if (!(*pd & mask))
                 return 0;
+            mask >>= 1;
         }
         else
         {
@@ -27,7 +38,7 @@ int match_bits(match_bits_t *m, const void *d, size_t l, const char *p)
         }
 
         p++;
-        if (!(mask >>= 1))
+        if (!mask)
         {
             pd++;
             l--;
