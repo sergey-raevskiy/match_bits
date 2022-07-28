@@ -31,6 +31,7 @@ int match_bits(match_bits_t *m, const void *d, size_t l, const char *p)
         {
             pd++;
             l--;
+            mask = 0x80;
         }
     }
 
