@@ -78,6 +78,20 @@ int match_bits(match_bits_t *m, const void *d, size_t l, const char *p)
                 return 0;
             state = 0, pd++, l--;
         }
+        else if (binmode && (*p >= 'a' && *p <= 'z'))
+        {
+            state++;
+            if (state == 8)
+                state = 0, pd++, l--;
+        }
+        else if (!binmode && state == 0 && (*p >= 'a' && *p <= 'z'))
+        {
+            state = 1;
+        }
+        else if (!binmode && state == 1 && (*p >= 'a' && *p <= 'z'))
+        {
+            state = 0, pd++, l--;
+        }
         else
         {
             return -1;
