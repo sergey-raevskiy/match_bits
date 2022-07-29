@@ -1,9 +1,7 @@
 #include "match_bits.h"
 
-static int match(unsigned char qq, unsigned char xx)
-{
-
-}
+// todo: hack
+#define group(m, n) (((uint64_t *) (m))[(n)-'a'])
 
 int match_bits(match_bits_t *m, const void *d, size_t l, const char *p)
 {
@@ -11,6 +9,8 @@ int match_bits(match_bits_t *m, const void *d, size_t l, const char *p)
     const unsigned char *pd = d;
     int binmode = 0;
     int state = 0;
+
+    memset(m, 0, sizeof(*m));
 
     while (*p && l)
     {
@@ -80,16 +80,24 @@ int match_bits(match_bits_t *m, const void *d, size_t l, const char *p)
         }
         else if (binmode && (*p >= 'a' && *p <= 'z'))
         {
+            group(m, *p) <<= 1;
+            if (*pd & bmsk[state])
+                group(m, *p) |= 1;
+
             state++;
             if (state == 8)
                 state = 0, pd++, l--;
         }
         else if (!binmode && state == 0 && (*p >= 'a' && *p <= 'z'))
         {
+            group(m, *p) <<= 4;
+            group(m, *p) |= (*pd) >> 4;
             state = 1;
         }
         else if (!binmode && state == 1 && (*p >= 'a' && *p <= 'z'))
         {
+            group(m, *p) <<= 4;
+            group(m, *p) |= (*pd) & 0xf;
             state = 0, pd++, l--;
         }
         else
