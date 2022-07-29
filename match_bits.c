@@ -46,5 +46,8 @@ int match_bits(match_bits_t *m, const void *d, size_t l, const char *p)
         }
     }
 
+    if (mask != 0x80)
+        return -1;
+
     return pd - (unsigned char*) d;
 }
